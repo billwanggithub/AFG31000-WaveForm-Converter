@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFG Waveform Editor", "AFG Waveform Editor\AFG Waveform Editor.csproj", "{945009DA-F62C-41A9-9641-EF7D9D53E76D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{945009DA-F62C-41A9-9641-EF7D9D53E76D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{945009DA-F62C-41A9-9641-EF7D9D53E76D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{945009DA-F62C-41A9-9641-EF7D9D53E76D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{945009DA-F62C-41A9-9641-EF7D9D53E76D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD6EB3C2-0B0B-43B5-A235-AD4506AB6541}
+	EndGlobalSection
+EndGlobal

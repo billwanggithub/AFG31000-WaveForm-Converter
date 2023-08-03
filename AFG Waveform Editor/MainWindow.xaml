@@ -1,0 +1,32 @@
+﻿<Window x:Class="AFG_Waveform_Editor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AFG_Waveform_Editor"
+        mc:Ignorable="d"
+        xmlns:ScottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
+        Title="AFG31000 Waveform Generator" Width="480" Height="480" Icon="/function_generator.png">
+    <DockPanel>
+        <UniformGrid Columns="2" DockPanel.Dock="Top">
+            <StackPanel>
+                <Image Source="/AFG31000-Arbitrary-Function-Generator.png" Width="240"/>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left">
+                    <TextBlock Width="200" Margin="5,5,5,5">Time Unit(s)</TextBlock>
+                    <TextBox Width="200"  Margin="5,5,5,5" Background="LightPink" Text="{Binding TimeUnit}" ></TextBox>
+                </StackPanel>
+                <StackPanel  DockPanel.Dock="Top" HorizontalAlignment="Left">
+                    <TextBlock Width="200" Margin="5,5,5,5">Frequency(Hz)</TextBlock>
+                    <TextBlock Width="200"  Margin="5,5,5,5" Background="LightBlue" Text="{Binding OutputFrequency}"></TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </UniformGrid>
+        <StackPanel  DockPanel.Dock="Top" HorizontalAlignment="Left">
+            <Button Command="{Binding LoadFileCommand}" Width="100" Margin="5,5,5,5" HorizontalAlignment="Left">Load</Button>
+            <TextBlock Text="{Binding InputFilePath}" Margin="5,5,5,5" Background="LightBlue" MinWidth="400"></TextBlock>
+        </StackPanel>
+        <ScottPlot:WpfPlot x:Name="WpfPlot1" x:FieldModifier="public" DockPanel.Dock="Bottom"/>
+    </DockPanel>
+</Window>

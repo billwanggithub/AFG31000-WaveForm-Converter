@@ -9,9 +9,9 @@ namespace Models
         [ObservableProperty]
         public decimal duration = 0;
         [ObservableProperty]
-        public double voltage = 0;
+        public decimal voltage = 0;
 
-        public WaveformListData(decimal duration, double voltage)
+        public WaveformListData(decimal duration, decimal voltage)
         {
             this.Duration = duration;
             this.Voltage = voltage;

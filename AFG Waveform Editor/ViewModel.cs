@@ -24,9 +24,9 @@ namespace AFG_Waveform_Editor
         [ObservableProperty]
         string? inputFilePath = null;
         [ObservableProperty]
-        double timeUnit = 0;
+        decimal timeUnit = 0;
         [ObservableProperty]
-        double outputFrequency = 0;
+        decimal outputFrequency = 0;
         [ObservableProperty]
         int progressValue = 0;
         [ObservableProperty]
@@ -87,18 +87,18 @@ namespace AFG_Waveform_Editor
             {
                 string[] param = line.Split(new char[] { ',' });
                 decimal duration = decimal.Parse(param[0], System.Globalization.NumberStyles.Float);
-                double voltage = double.Parse(param[1]);
+                decimal voltage = decimal.Parse(param[1]);
                 waveformLists.Add(new(duration, voltage));
                 await WriteConsole($"=> duration, voltage = {duration},{voltage}\n");
             }
             return waveformLists;
         }
-        async Task<(List<double>?, List<double>?)> ParseWaveformList(ObservableCollection<WaveformListData>? waveformListDataCollection)
+        async Task<(List<decimal>?, List<decimal>?)> ParseWaveformList(ObservableCollection<WaveformListData>? waveformListDataCollection)
         {
             await WriteConsole("Parse  Waveform List\n", Colors.LightBlue);
 
-            List<double> dataX = new();
-            List<double> dataY = new();
+            List<decimal> dataX = new();
+            List<decimal> dataY = new();
 
 
             // Calculate precision
@@ -122,7 +122,7 @@ namespace AFG_Waveform_Editor
                 await WriteConsole($"line, maxdigit = {++index}, {maxDigit}\n");
             }
             timeResolution = 1m / (decimal)Math.Pow(10.0, (double)maxDigit);
-            TimeUnit = (double)timeResolution;
+            TimeUnit = (decimal)timeResolution;
             await WriteConsole($"Time Resolution = {timeResolution} Sec.\n", Colors.Orange);
 
             // Add data
@@ -134,7 +134,7 @@ namespace AFG_Waveform_Editor
             {
                 decimal duration = row.Duration;
                 int count = (int)(duration * (decimal)Math.Pow(10.0, (double)maxDigit));
-                double voltage = row.Voltage;
+                decimal voltage = row.Voltage;
                 await WriteConsole($"line,count, duration, voltage = {++index}, {count}, {duration}, {voltage}\n");
 
                 ProgressMax = count - 1;
@@ -142,7 +142,7 @@ namespace AFG_Waveform_Editor
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        double time = (order + 1) * TimeUnit;
+                        decimal time = (order + 1) * TimeUnit;
                         dataX.Add(time);
                         dataY.Add(voltage);
                         if ((count % 1000) == 0)
@@ -154,12 +154,12 @@ namespace AFG_Waveform_Editor
                 });
             }
             ProgressValue = order;
-            OutputFrequency = Math.Round(1.0 / (TimeUnit * (double)order), 9);
+            OutputFrequency = Math.Round(1.0m / (TimeUnit * (decimal)order), 9);
             await WriteConsole($"Total Time = {dataX.Last()} Sec.\nTotal Data points = {dataX.Count}\n", Colors.Orange);
             await WriteConsole($"Set AFG31000 Frequency to {OutputFrequency}\n", Colors.Orange);
             return (dataX, dataY);
         }
-        async Task PlotData(List<double>? dataX, List<double>? dataY)
+        async Task PlotData(List<decimal>? dataX, List<decimal>? dataY)
         {
             if (window is null)
             {
@@ -172,6 +172,9 @@ namespace AFG_Waveform_Editor
                 return;
             }
 
+            double[] X = dataX.Select(x => (double)x).ToArray();
+            double[] Y = dataY.Select(x => (double)x).ToArray();
+
             WpfPlot wpfPlot = window.WpfPlot1;
             wpfPlot.Plot.XLabel("Time(s)");
             wpfPlot.Plot.YLabel("Voltage(V)");
@@ -180,14 +183,14 @@ namespace AFG_Waveform_Editor
 
             await Task.Run(() =>
             {
-                SignalPlotXY signalPlotXY = wpfPlot.Plot.AddSignalXY(dataX.ToArray(), dataY.ToArray());
+                SignalPlotXY signalPlotXY = wpfPlot.Plot.AddSignalXY(X, Y);
                 signalPlotXY.LineStyle = LineStyle.DashDot;
             });
 
             wpfPlot.Plot.AxisAuto();
             wpfPlot.Refresh();
         }
-        async Task SavWaveformListToAwgFormat(List<double>? X, List<double>? Y)
+        async Task SavWaveformListToAwgFormat(List<decimal>? X, List<decimal>? Y)
         {
             if (X == null || Y == null)
             {
@@ -221,7 +224,7 @@ namespace AFG_Waveform_Editor
         }
         async Task UpdateWaveformPlotAsync()
         {
-            (List<double>? X, List<double>? Y) = await ParseWaveformList(WaveformListDataCollection);
+            (List<decimal>? X, List<decimal>? Y) = await ParseWaveformList(WaveformListDataCollection);
             await PlotData(X, Y);
             await SavWaveformListToAwgFormat(X, Y);
         }
@@ -231,8 +234,8 @@ namespace AFG_Waveform_Editor
         public ObservableCollection<WaveformListData>? waveformListDataCollection = new();
         [ObservableProperty]
         int waveformListSelectedIndex = 0;
-        [ObservableProperty]
-        WaveformListData waveformEditItem = new(0.001m, 1.0);
+        //[ObservableProperty]
+        //WaveformListData waveformEditItem = new(0.001m, 1.0m);
 
         [RelayCommand]
         public async Task UpdateWaveformPlot(object? param)
@@ -265,9 +268,9 @@ namespace AFG_Waveform_Editor
 
             WaveformListDataCollection = waveforList;
 
-            (List<double>? X, List<double>? Y) = await ParseWaveformList(waveforList);
+            (List<decimal>? X, List<decimal>? Y) = await ParseWaveformList(waveforList);
 
-            //(List<double>? dataX, List<double>? dataY) = await ParseFile(InputFilePath);
+            //(List<decimal>? dataX, List<decimal>? dataY) = await ParseFile(InputFilePath);
 
             if ((X is null) || (Y is null))
             {
@@ -314,7 +317,7 @@ namespace AFG_Waveform_Editor
         {
             if (param is not DataGrid) { return; }
             if (WaveformListDataCollection is null) { return; }
-            WaveformEditItem = new(0, 0);
+            var WaveformEditItem = new WaveformListData(0.0m, 0.0m);
 
             Views.EditWaveformListView dialog = new();
             bool? result = dialog.ShowDialog();
@@ -330,7 +333,7 @@ namespace AFG_Waveform_Editor
         {
             if (param is not DataGrid dataGrid) { return; }
             if (WaveformListDataCollection is null) { return; }
-            WaveformEditItem = new(0, 0);
+            var WaveformEditItem = new WaveformListData(0, 0);
 
             Views.EditWaveformListView dialog = new();
             bool? result = dialog.ShowDialog();

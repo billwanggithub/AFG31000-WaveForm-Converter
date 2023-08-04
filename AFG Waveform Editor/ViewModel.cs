@@ -8,10 +8,13 @@ using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -19,6 +22,19 @@ namespace AFG_Waveform_Editor
 {
     public partial class ViewModel : ObservableObject
     {
+        public ViewModel()
+        {
+
+        }
+
+        public async void Init()
+        {
+            if (window is null) { return; }
+            window.Title += " Ver:" + GetWpfFileVersion();
+
+            await WriteConsole($"File Version: {GetWpfFileVersion()}\nBuild Date: {GetWpfBuildDate()}\n");
+        }
+
         public MainWindow? window;
 
         [ObservableProperty]
@@ -95,6 +111,10 @@ namespace AFG_Waveform_Editor
         }
         async Task<(List<decimal>?, List<decimal>?)> ParseWaveformList(ObservableCollection<WaveformListData>? waveformListDataCollection)
         {
+            if (waveformListDataCollection == null)
+            {
+                return (null, null);
+            }
             await WriteConsole("Parse  Waveform List\n", Colors.LightBlue);
 
             List<decimal> dataX = new();
@@ -136,18 +156,20 @@ namespace AFG_Waveform_Editor
                 int count = (int)(duration * (decimal)Math.Pow(10.0, (double)maxDigit));
                 decimal voltage = row.Voltage;
                 await WriteConsole($"line,count, duration, voltage = {++index}, {count}, {duration}, {voltage}\n");
+                GC.Collect();
 
                 ProgressMax = count - 1;
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     for (int i = 0; i < count; i++)
                     {
                         decimal time = (order + 1) * TimeUnit;
                         dataX.Add(time);
                         dataY.Add(voltage);
-                        if ((count % 1000) == 0)
+                        if ((i % 1000) == 0)
                         {
                             ProgressValue = i;
+                            await Task.Delay(1);
                         }
                         order++;
                     }
@@ -161,6 +183,7 @@ namespace AFG_Waveform_Editor
         }
         async Task PlotData(List<decimal>? dataX, List<decimal>? dataY)
         {
+            GC.Collect();
             if (window is null)
             {
                 return;
@@ -172,19 +195,23 @@ namespace AFG_Waveform_Editor
                 return;
             }
 
+            await WriteConsole("Convert Plot Data to Double\n", Colors.LightBlue);
+
             double[] X = dataX.Select(x => (double)x).ToArray();
             double[] Y = dataY.Select(x => (double)x).ToArray();
 
+            await WriteConsole("Update Plot Data\n", Colors.LightBlue);
             WpfPlot wpfPlot = window.WpfPlot1;
             wpfPlot.Plot.XLabel("Time(s)");
             wpfPlot.Plot.YLabel("Voltage(V)");
             wpfPlot.Plot.Title("Voltage vs Time");
             wpfPlot.Plot.Clear();
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 SignalPlotXY signalPlotXY = wpfPlot.Plot.AddSignalXY(X, Y);
                 signalPlotXY.LineStyle = LineStyle.DashDot;
+                await Task.Delay(1);
             });
 
             wpfPlot.Plot.AxisAuto();
@@ -192,6 +219,9 @@ namespace AFG_Waveform_Editor
         }
         async Task SavWaveformListToAwgFormat(List<decimal>? X, List<decimal>? Y)
         {
+            await WriteConsole("Convert Waveform Data to AFG31000 Format\n", Colors.LightBlue);
+
+
             if (X == null || Y == null)
             {
                 await WriteConsole("Data is null", Colors.Red);
@@ -202,11 +232,21 @@ namespace AFG_Waveform_Editor
             int count = X.Count;
             ProgressMax = count - 1;
             ProgressValue = 0;
+            await WriteConsole($"Line Count = {count}\n");
             for (int i = 0; i < count; i++)
             {
-                csvString += $"{X[i]},{Y[i]}";
-                ProgressValue = i;
+                csvString += $"{X[i]},{Y[i]}\n";
+
+                if ((i % 1000 == 0))
+                {
+                    ProgressValue = i;
+                    await WriteConsole($"Process {i} lines, {(i * 100 / count):N1}%\n");
+                    await Task.Delay(1);
+                    GC.Collect();
+                }
             }
+            await WriteConsole($"Process {count} lines, {(count * 100 / count):N1}%\n");
+            GC.Collect();
 
             SaveFileDialog saveFileDialog = new()
             {
@@ -234,14 +274,17 @@ namespace AFG_Waveform_Editor
         public ObservableCollection<WaveformListData>? waveformListDataCollection = new();
         [ObservableProperty]
         int waveformListSelectedIndex = 0;
-        //[ObservableProperty]
-        //WaveformListData waveformEditItem = new(0.001m, 1.0m);
+        [ObservableProperty]
+        WaveformListData waveformEditItem = new(0.001m, 1.0m);
 
         [RelayCommand]
         public async Task UpdateWaveformPlot(object? param)
         {
             if ((WaveformListDataCollection == null) || (WaveformListDataCollection.Count == 0))
             {
+                window.WpfPlot1.Plot.Clear();
+                window.WpfPlot1.Refresh();
+
                 await WriteConsole("No Data\n", Colors.Red);
                 return;
             }
@@ -251,6 +294,8 @@ namespace AFG_Waveform_Editor
         [RelayCommand]
         public async Task LoadWaveformList(object? param)
         {
+            GC.Collect();
+
             InputFilePath = await SelectInputFile();
             if (InputFilePath == null)
             {
@@ -311,13 +356,31 @@ namespace AFG_Waveform_Editor
             File.WriteAllText(saveFileDialog.FileName, csvString);
             await WriteConsole($"Write to {saveFileDialog.FileName}\n", Colors.LightGreen);
         }
+        [RelayCommand]
+        public async Task ClearWaveformList(object? param)
+        {
+            //window.Dispatcher.Invoke(() =>
+            //{
+            //    window.WpfPlot1.Plot.Clear();
+            //    window.WpfPlot1.Refresh();
+            //});
 
+            window.WpfPlot1.Plot.Clear();
+            window.WpfPlot1.Refresh();
+
+            if (WaveformListDataCollection == null)
+            {
+                return;
+            }
+            WaveformListDataCollection.Clear();
+            await Task.Delay(1);
+        }
         [RelayCommand]
         public void AddWaveformList(object? param)
         {
             if (param is not DataGrid) { return; }
             if (WaveformListDataCollection is null) { return; }
-            var WaveformEditItem = new WaveformListData(0.0m, 0.0m);
+            WaveformEditItem = new WaveformListData(WaveformEditItem.Duration, WaveformEditItem.Voltage);
 
             Views.EditWaveformListView dialog = new();
             bool? result = dialog.ShowDialog();
@@ -333,7 +396,7 @@ namespace AFG_Waveform_Editor
         {
             if (param is not DataGrid dataGrid) { return; }
             if (WaveformListDataCollection is null) { return; }
-            var WaveformEditItem = new WaveformListData(0, 0);
+            WaveformEditItem = new WaveformListData(WaveformEditItem.Duration, WaveformEditItem.Voltage);
 
             Views.EditWaveformListView dialog = new();
             bool? result = dialog.ShowDialog();
@@ -347,6 +410,35 @@ namespace AFG_Waveform_Editor
         }
         #endregion
 
+        #region System Information
+        // 获取WPF应用程序的版本号
+        static string? GetWpfFileVersion()
+        {
+            Assembly assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            if (assembly != null)
+            {
+                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+                return fileVersionInfo.FileVersion;
+            }
+            return null;
+        }
+
+        // 获取WPF应用程序的构建日期
+        static DateTime? GetWpfBuildDate()
+        {
+            Assembly assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            if (assembly != null)
+            {
+                string filePath = assembly.Location;
+                if (System.IO.File.Exists(filePath))
+                {
+                    return System.IO.File.GetLastWriteTime(filePath);
+                }
+            }
+            return DateTime.MinValue;
+        }
+        #endregion
+
         #region Help
         [RelayCommand]
         public void GotoUserGuide(object? param)
@@ -357,6 +449,11 @@ namespace AFG_Waveform_Editor
         public void GotoTektronic(object? param)
         {
             InternetHelper.OpenUrl(@"https://www.tek.com/en/products/signal-generators/arbitrary-function-generator/afg31000");
+        }
+        [RelayCommand]
+        public void About(object? param)
+        {
+            MessageBox.Show($"File Version: {GetWpfFileVersion()}\nBuild Date: {GetWpfBuildDate()}\n", "About");
         }
         #endregion
     }

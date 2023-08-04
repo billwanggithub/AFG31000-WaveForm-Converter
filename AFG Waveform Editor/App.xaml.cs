@@ -48,6 +48,7 @@ namespace AFG_Waveform_Editor
             viewModel = Services?.GetService<ViewModel>(); // Get MainViewModel
             mainWindow.DataContext = viewModel;
             viewModel!.window = mainWindow;
+            viewModel.Init();
             this.MainWindow = mainWindow;
             this.MainWindow!.Top = 0;
             this.MainWindow.Left = 0;

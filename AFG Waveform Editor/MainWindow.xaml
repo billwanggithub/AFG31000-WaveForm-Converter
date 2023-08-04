@@ -11,9 +11,10 @@
         Title="AFG31000 Waveform Generator" Icon="/function_generator.png" Width="640" Height="600">
     <DockPanel x:Name="mainPanel">
         <Menu DockPanel.Dock="Top" HorizontalAlignment="Right">
-            <MenuItem Header="Help" >
+            <MenuItem Header="Help" FontWeight="Bold" FontSize="16" >
                 <MenuItem Header="User Guide" Command="{Binding GotoUserGuideCommand}"/>
                 <MenuItem Header="Tektronix" Command="{Binding GotoTektronicCommand}"/>
+                <MenuItem Header="About" Command="{Binding AboutCommand}"/>
             </MenuItem>
         </Menu>
         <Separator DockPanel.Dock="Top" Height="5"></Separator>
@@ -47,18 +48,20 @@
         </ScrollViewer>
         <DockPanel DockPanel.Dock="Left">
             <ProgressBar Value="{Binding ProgressValue}" Maximum="{Binding ProgressMax}" DockPanel.Dock="Bottom" Height="15" Margin="5,5,5,5"></ProgressBar>
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+            <UniformGrid DockPanel.Dock="Bottom" Columns="4">
                 <Button Command="{Binding InsertWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
                          ToolTip="Insert Below the Selected Item">Insert</Button>
                 <Button Command="{Binding AddWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
                          ToolTip="Add to Last">Add</Button>
+                <Button Command="{Binding ClearWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
+                         ToolTip="Clear ALL Data">CLear</Button>
                 <Button Command="{Binding UpdateWaveformPlotCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
                          ToolTip="Update Plot">Update</Button>
                 <Button Command="{Binding LoadWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
                          ToolTip="Load CSV File">Load</Button>
                 <Button Command="{Binding SaveWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
                          ToolTip="Save to CSV File">Save</Button>
-            </StackPanel>
+            </UniformGrid>
             <ce:ScrollingDataGrid x:Name="waveform_datagrid" x:FieldModifier="public" BorderThickness="2,2,2,2" 
                             ItemsSource="{Binding WaveformListDataCollection}"                                    
                             SelectedIndex="{Binding WaveformListSelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"     

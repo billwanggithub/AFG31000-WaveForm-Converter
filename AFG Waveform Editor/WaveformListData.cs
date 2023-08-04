@@ -4,8 +4,8 @@ namespace Models
 {
     public partial class WaveformListData : ObservableObject
     {
-        [ObservableProperty]
-        public int order = 0;
+        //[ObservableProperty]
+        //public int order = 0;
         [ObservableProperty]
         public decimal duration = 0;
         [ObservableProperty]

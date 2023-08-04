@@ -33,6 +33,8 @@ namespace AFG_Waveform_Editor
         SemaphoreSlim semaphoreConsole = new(1, 1);
         MainWindow window;
 
+        string outCsvString = "";
+
         public ViewModel(MainWindow window)//, WpfPlot plot, ConsoleControl.WPF.ConsoleControl console)
         {
             this.window = window;
@@ -59,8 +61,18 @@ namespace AFG_Waveform_Editor
         [RelayCommand]
         public async Task LoadFile(object? param)
         {
-            InputFilePath = await SelectFile();
-            string? outString = await ParseFile(InputFilePath);
+            InputFilePath = await SelectInputFile();
+
+            (List<double>? dataX, List<double>? dataY) = await ParseFile(InputFilePath);
+
+            if ((dataX is null) || (dataY is null))
+            {
+                await WriteConsole("Data Error\n", Colors.Red);
+                return;
+            }
+
+            await PlotData(dataX, dataY);
+
             SaveFileDialog saveFileDialog = new()
             {
                 RestoreDirectory = true,
@@ -71,18 +83,20 @@ namespace AFG_Waveform_Editor
             saveFileDialog.ShowDialog();
             if (saveFileDialog.FileName == "")
                 return;
-            if (outString != null)
+
+            if (outCsvString != null)
             {
-                File.WriteAllText(saveFileDialog.FileName, outString);
+                File.WriteAllText(saveFileDialog.FileName, outCsvString);
+                await WriteConsole($"Write to {saveFileDialog.FileName}\n", Colors.LightGreen);
             }
         }
 
-        static async Task<string?> SelectFile()
+        static async Task<string?> SelectInputFile()
         {
             OpenFileDialog openFileDialog = new()
             {
                 RestoreDirectory = true,
-                Title = "Load Rolling Plot File",
+                Title = "Load Data File",
                 DefaultExt = "csv",
                 Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*",
                 CheckFileExists = true,
@@ -97,14 +111,13 @@ namespace AFG_Waveform_Editor
             return openFileDialog.FileName;
         }
 
-        async Task<string?> ParseFile(string? filePath)
+        async Task<(List<double>?, List<double>?)> ParseFile(string? filePath)
         {
             await WriteConsole("Parse File\n", Colors.LightBlue);
             if (filePath is null)
             {
-                return null;
+                return (null, null);
             }
-
 
             List<double> dataX = new();
             List<double> dataY = new();
@@ -173,8 +186,18 @@ namespace AFG_Waveform_Editor
             OutputFrequency = Math.Round(1.0 / (TimeUnit * (double)order), 9);
             await WriteConsole($"Total Time = {dataX.Last()} Sec.\nTotal Data points = {dataX.Count}\n", Colors.Orange);
 
+            outCsvString = outLines;
+            return (dataX, dataY);
+        }
 
-            List<(decimal, decimal)> data = new();
+        async Task PlotData(List<double>? dataX, List<double>? dataY)
+        {
+            if ((dataX is null) || (dataY is null))
+            {
+                await WriteConsole("Data Error\n", Colors.Red);
+                return;
+            }
+
             WpfPlot1.Plot.Clear();
             await Task.Run(() =>
             {
@@ -189,8 +212,6 @@ namespace AFG_Waveform_Editor
             WpfPlot1.Plot.Title("Voltage vs Time");
             WpfPlot1.Plot.AxisAuto();
             WpfPlot1.Refresh();
-
-            return outLines;
         }
     }
 }

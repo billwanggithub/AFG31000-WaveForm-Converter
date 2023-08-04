@@ -6,20 +6,21 @@
         xmlns:local="clr-namespace:AFG_Waveform_Editor"
         mc:Ignorable="d"
         xmlns:ScottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
-        Title="AFG31000 Waveform Generator" Width="480" Height="480" Icon="/function_generator.png">
-    <DockPanel>
+        xmlns:consoleControl="clr-namespace:ConsoleControl.WPF;assembly=ConsoleControl.WPF"
+        Title="AFG31000 Waveform Generator" Icon="/function_generator.png" Width="640" Height="600">
+    <DockPanel x:Name="mainPanel">
         <UniformGrid Columns="2" DockPanel.Dock="Top">
             <StackPanel>
                 <Image Source="/AFG31000-Arbitrary-Function-Generator.png" Width="240"/>
             </StackPanel>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left">
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" Visibility="Visible">
                     <TextBlock Width="200" Margin="5,5,5,5">Time Unit(s)</TextBlock>
-                    <TextBox Width="200"  Margin="5,5,5,5" Background="LightPink" Text="{Binding TimeUnit}" ></TextBox>
+                    <TextBox Width="200"  Margin="5,5,5,5" Background="LightBlue" Text="{Binding TimeUnit}" IsEnabled="False"></TextBox>
                 </StackPanel>
                 <StackPanel  DockPanel.Dock="Top" HorizontalAlignment="Left">
                     <TextBlock Width="200" Margin="5,5,5,5">Frequency(Hz)</TextBlock>
-                    <TextBlock Width="200"  Margin="5,5,5,5" Background="LightBlue" Text="{Binding OutputFrequency}"></TextBlock>
+                    <TextBlock MinWidth="200"  Margin="5,5,5,5" Background="LightBlue" Text="{Binding OutputFrequency}" FontSize="16" FontWeight="Bold"/>
                 </StackPanel>
             </StackPanel>
         </UniformGrid>
@@ -27,6 +28,15 @@
             <Button Command="{Binding LoadFileCommand}" Width="100" Margin="5,5,5,5" HorizontalAlignment="Left">Load</Button>
             <TextBlock Text="{Binding InputFilePath}" Margin="5,5,5,5" Background="LightBlue" MinWidth="400"></TextBlock>
         </StackPanel>
-        <ScottPlot:WpfPlot x:Name="WpfPlot1" x:FieldModifier="public" DockPanel.Dock="Bottom"/>
+        <ProgressBar Value="{Binding ProgressValue}" Maximum="{Binding ProgressMax}" DockPanel.Dock="Top" Height="15" Margin="5,5,5,5"></ProgressBar>
+        <!--Console-->
+        <ScrollViewer x:Name="consoleScrollViewer" DockPanel.Dock="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto" CanContentScroll="True" 
+                          Width="{Binding ActualWidth, ElementName=mainPanel, Mode=OneWay}" Height="100" Margin="5,5,5,5">
+            <consoleControl:ConsoleControl x:Name="consoleControl" x:FieldModifier="public" 
+            FontSize="14" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" 
+            Width="{Binding ActualWidth, ElementName=mainPanel, Mode=OneWay}"  >
+            </consoleControl:ConsoleControl>
+        </ScrollViewer>
+        <ScottPlot:WpfPlot x:Name="WpfPlot1" x:FieldModifier="public" DockPanel.Dock="Top"/>
     </DockPanel>
 </Window>

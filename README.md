@@ -2,7 +2,7 @@
 
 **Convert a csv file into AFG31000 csv format**
 
-![App](Assets/App.png)![App](Assets/App.png)
+![App](Assets/App.png)
 
 ## Enviroment
 

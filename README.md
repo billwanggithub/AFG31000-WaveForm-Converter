@@ -1,7 +1,13 @@
 # Tektronix AFG31000 Waveform Converter
 
-Convert a csv file into AFG31000 csv format
+**Convert a csv file into AFG31000 csv format**
+
 ![App](Assets/App.png)
+
+## Enviroment
+
+- Visual Studio 2022
+- WPF
 
 ## Input File format
 
@@ -70,6 +76,13 @@ Convert a csv file into AFG31000 csv format
 2.900000E-003,3.000
 3.000000E-003,3.000
 ```
+
+## Programming Note
+
+- If you want to avoid user to install .net desktop, Set Deploy mode to self-contained
+- Use Produce single file to combine all dll into single exe
+ 
+![Publish Option](Assets/publish_option.png)
 
 ## History
 

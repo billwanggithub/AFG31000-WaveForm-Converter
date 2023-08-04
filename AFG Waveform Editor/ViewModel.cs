@@ -124,8 +124,8 @@ namespace AFG_Waveform_Editor
                 ProgressValue = index;
                 string[] param = line.Split(new char[] { ',' });
 
-                // calculate the decimal digital
-                string[] timeStringArray = param[0].Split(new char[] { '.' });
+                // calculate the decimal digital 
+                string[] timeStringArray = decimal.Parse(param[0], System.Globalization.NumberStyles.Float).ToString().Split(new char[] { '.' });
                 if (timeStringArray.Length > 1)
                 {
                     if (timeStringArray[1].Length > maxDigit)
@@ -146,8 +146,9 @@ namespace AFG_Waveform_Editor
             foreach (string line in lines)
             {
                 string[] param = line.Split(new char[] { ',' });
-                int count = (int)(decimal.Parse(param[0]) * (decimal)Math.Pow(10.0, (double)maxDigit));
-                await WriteConsole($"line,count, voltage = {++index}, {count}, {decimal.Parse(param[1])}\n");
+                decimal duration = decimal.Parse(param[0], System.Globalization.NumberStyles.Float);
+                int count = (int)(duration * (decimal)Math.Pow(10.0, (double)maxDigit));
+                await WriteConsole($"line,count, duration, voltage = {++index}, {count}, {duration}, {decimal.Parse(param[1])}\n");
 
                 double voltage = double.Parse(param[1]);
                 ProgressMax = count - 1;

@@ -9,6 +9,13 @@
         xmlns:consoleControl="clr-namespace:ConsoleControl.WPF;assembly=ConsoleControl.WPF"
         Title="AFG31000 Waveform Generator" Icon="/function_generator.png" Width="640" Height="600">
     <DockPanel x:Name="mainPanel">
+        <Menu DockPanel.Dock="Top" HorizontalAlignment="Right">
+            <MenuItem Header="Help" >
+                <MenuItem Header="User Guide" Command="{Binding GotoUserGuideCommand}"/>
+                <MenuItem Header="Tektronix" Command="{Binding GotoTektronicCommand}"/>
+            </MenuItem>
+        </Menu>
+        <Separator DockPanel.Dock="Top" Height="5"></Separator>
         <UniformGrid Columns="2" DockPanel.Dock="Top">
             <StackPanel>
                 <Image Source="/AFG31000-Arbitrary-Function-Generator.png" Width="240"/>
@@ -24,6 +31,7 @@
                 </StackPanel>
             </StackPanel>
         </UniformGrid>
+        <Separator DockPanel.Dock="Top" Height="5"></Separator>
         <StackPanel  DockPanel.Dock="Top" HorizontalAlignment="Left">
             <Button Command="{Binding LoadFileCommand}" Width="100" Margin="5,5,5,5" HorizontalAlignment="Left">Load</Button>
             <TextBlock Text="{Binding InputFilePath}" Margin="5,5,5,5" Background="LightBlue" MinWidth="400"></TextBlock>

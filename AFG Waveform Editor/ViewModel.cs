@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Internet;
 using Microsoft.Win32;
 using ScottPlot;
 using ScottPlot.Plottable;
@@ -213,5 +214,18 @@ namespace AFG_Waveform_Editor
             WpfPlot1.Plot.AxisAuto();
             WpfPlot1.Refresh();
         }
+
+        #region Help
+        [RelayCommand]
+        public void GotoUserGuide(object? param)
+        {
+            InternetHelper.OpenUrl(@"https://github.com/billwanggithub/AFG31000-WaveForm-Converter");
+        }
+        [RelayCommand]
+        public void GotoTektronic(object? param)
+        {
+            InternetHelper.OpenUrl(@"https://www.tek.com/en/products/signal-generators/arbitrary-function-generator/afg31000");
+        }
+        #endregion
     }
 }

@@ -79,7 +79,8 @@
 
 ## Programming Note
 
-- If you want to avoid user to install .net desktop, Set Deploy mode to self-contained
+**Publish**
+- Set Deploy mode to self-contained to avoid user installing .NET Desktop
 - Use Produce single file to combine all dll into single exe
  
 ![Publish Option](Assets/publish_option.png)

@@ -34,10 +34,9 @@
         </UniformGrid>
         <Separator DockPanel.Dock="Top" Height="5"></Separator>
         <StackPanel  DockPanel.Dock="Top" HorizontalAlignment="Left">
-            <Button Command="{Binding LoadFileCommand}" Width="100" Margin="5,5,5,5" HorizontalAlignment="Left">Load</Button>
+            <!--Button Command="{Binding LoadFileCommand}" Width="100" Margin="5,5,5,5" HorizontalAlignment="Left">Load</Button-->
             <TextBlock Text="{Binding InputFilePath}" Margin="5,5,5,5" Background="LightBlue" MinWidth="400"></TextBlock>
         </StackPanel>
-        <ProgressBar Value="{Binding ProgressValue}" Maximum="{Binding ProgressMax}" DockPanel.Dock="Top" Height="15" Margin="5,5,5,5"></ProgressBar>
         <!--Console-->
         <ScrollViewer x:Name="consoleScrollViewer" DockPanel.Dock="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto" CanContentScroll="True" 
                           Width="{Binding ActualWidth, ElementName=mainPanel, Mode=OneWay}" Height="100" Margin="5,5,5,5">
@@ -47,11 +46,18 @@
             </consoleControl:ConsoleControl>
         </ScrollViewer>
         <DockPanel DockPanel.Dock="Left">
+            <ProgressBar Value="{Binding ProgressValue}" Maximum="{Binding ProgressMax}" DockPanel.Dock="Bottom" Height="15" Margin="5,5,5,5"></ProgressBar>
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                <Button Command="{Binding InsertWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5">Insert</Button>
-                <Button Command="{Binding AddWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5">Add</Button>
-                <Button Command="{Binding LoadWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5">Load</Button>
-                <Button Command="{Binding SaveWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5">Save</Button>
+                <Button Command="{Binding InsertWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
+                         ToolTip="Insert Below the Selected Item">Insert</Button>
+                <Button Command="{Binding AddWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
+                         ToolTip="Add to Last">Add</Button>
+                <Button Command="{Binding UpdateWaveformPlotCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
+                         ToolTip="Update Plot">Update</Button>
+                <Button Command="{Binding LoadWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
+                         ToolTip="Load CSV File">Load</Button>
+                <Button Command="{Binding SaveWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
+                         ToolTip="Save to CSV File">Save</Button>
             </StackPanel>
             <ce:ScrollingDataGrid x:Name="waveform_datagrid" x:FieldModifier="public" BorderThickness="2,2,2,2" 
                             ItemsSource="{Binding WaveformListDataCollection}"                                    

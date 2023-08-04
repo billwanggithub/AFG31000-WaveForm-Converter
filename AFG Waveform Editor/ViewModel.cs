@@ -2,20 +2,37 @@
 using CommunityToolkit.Mvvm.Input;
 using Internet;
 using Microsoft.Win32;
+using Models;
 using ScottPlot;
 using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace AFG_Waveform_Editor
 {
-    partial class ViewModel : ObservableObject
+    public partial class ViewModel : ObservableObject
     {
+        public ViewModel()
+        {
+
+        }
+
+        public MainWindow window;
+
+        [ObservableProperty]
+        public ObservableCollection<WaveformListData>? waveformListDataCollection = new();
+        [ObservableProperty]
+        int waveformListSelectedIndex = 0;
+        [ObservableProperty]
+        WaveformListData waveformEditItem = new(0.001m, 1.0);
+
         [ObservableProperty]
         string? inputFilePath = string.Empty;
         [ObservableProperty]
@@ -27,21 +44,15 @@ namespace AFG_Waveform_Editor
         [ObservableProperty]
         int progressMax = 0;
 
-        WpfPlot WpfPlot1 { get; set; }
         ConsoleControl.WPF.ConsoleControl consoleControl { get; set; }
         string? outputFilePath = string.Empty;
 
         SemaphoreSlim semaphoreConsole = new(1, 1);
-        MainWindow window;
+
 
         string outCsvString = "";
 
-        public ViewModel(MainWindow window)//, WpfPlot plot, ConsoleControl.WPF.ConsoleControl console)
-        {
-            this.window = window;
-            WpfPlot1 = window.WpfPlot1; // plot;
-            consoleControl = window.consoleControl;// console;
-        }
+
 
         public async Task WriteConsole(string? text, System.Windows.Media.Color? forecolor = null, System.Windows.Media.Color? backcolor = null, bool? isBold = false, string[]? target = null)
         {
@@ -157,14 +168,19 @@ namespace AFG_Waveform_Editor
             await WriteConsole("Add Data points\n", Colors.LightBlue);
             index = 0;
             int order = 0;
+            //WaveformListDataCollection = new();
             foreach (string line in lines)
             {
                 string[] param = line.Split(new char[] { ',' });
                 decimal duration = decimal.Parse(param[0], System.Globalization.NumberStyles.Float);
                 int count = (int)(duration * (decimal)Math.Pow(10.0, (double)maxDigit));
+                double voltage = double.Parse(param[1]);
+                // Add data to list
+                WaveformListDataCollection.Add(new(duration, voltage));
+
                 await WriteConsole($"line,count, duration, voltage = {++index}, {count}, {duration}, {decimal.Parse(param[1])}\n");
 
-                double voltage = double.Parse(param[1]);
+
                 ProgressMax = count - 1;
                 await Task.Run(() =>
                 {
@@ -193,6 +209,7 @@ namespace AFG_Waveform_Editor
 
         async Task PlotData(List<double>? dataX, List<double>? dataY)
         {
+            WpfPlot WpfPlot1 = window.WpfPlot1;
             if ((dataX is null) || (dataY is null))
             {
                 await WriteConsole("Data Error\n", Colors.Red);
@@ -215,9 +232,28 @@ namespace AFG_Waveform_Editor
             WpfPlot1.Refresh();
         }
 
+        #region WaveformList
+        [RelayCommand]
+        public void AddWaveformList(object? param)
+        {
+            if (param is not DataGrid) { return; }
+            if (WaveformListDataCollection is null) { return; }
+            WaveformEditItem = new(0, 0);
+
+            Views.EditWaveformListView dialog = new();
+            bool? result = dialog.ShowDialog();
+
+            // If the user clicked the OK button, add the new item to the collection.
+            if (result == true)
+            {
+                WaveformListDataCollection.Add(WaveformEditItem);
+            }
+        }
+        #endregion
+
         #region Help
         [RelayCommand]
-        public void GotoUserGuide(object? param)
+        public void AGotoUserGuide(object? param)
         {
             InternetHelper.OpenUrl(@"https://github.com/billwanggithub/AFG31000-WaveForm-Converter");
         }

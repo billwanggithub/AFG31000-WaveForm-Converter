@@ -10,7 +10,6 @@ namespace AFG_Waveform_Editor
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModel(this);
         }
     }
 }

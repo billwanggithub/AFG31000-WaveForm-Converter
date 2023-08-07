@@ -79,11 +79,21 @@
 
 ## Programming Note
 
-**Publish**
+### **Publish To Single FIle**
 - Set Deploy mode to self-contained to avoid user installing .NET Desktop
-- Use Produce single file to combine all dll into single exe
- 
+- Set Produce single file to combine all dll into single exe
+- Add The following line to FolderProfile.pubxml
+```xml
+	<IncludeAllContentForSelfExtract>True</IncludeAllContentForSelfExtract>
+```
 ![Publish Option](Assets/publish_option.png)
+
+### References:
+
+- [Publish single executable not working for .NET 5 or .NET 6](https://community.esri.com/t5/net-maps-sdk-questions/publish-single-executable-not-working-for-net-5-or/td-p/1136336)
+- [Single-file deployment](https://learn.microsoft.com/en-us/dotnet/core/deploying/single-file/overview?tabs=cli#including-native-libraries)
+
+ 
 
 ## History
 

@@ -31,12 +31,17 @@ namespace AFG_Waveform_Editor
         {
             if (window is null) { return; }
             window.Title += " Ver:" + GetWpfFileVersion();
-
             await WriteConsole($"File Version: {GetWpfFileVersion()}\nBuild Date: {GetWpfBuildDate()}\n");
+
+            //var menuItem = new MenuItem();
+            //menuItem.Name = "TestMenu";
+            //menuItem.Header = "TestHearer";
+            //window.WpfPlot1.ContextMenu.Items.Add(menuItem);
         }
 
         public MainWindow? window;
 
+        #region GUI Binding
         [ObservableProperty]
         string? inputFilePath = null;
         [ObservableProperty]
@@ -47,6 +52,10 @@ namespace AFG_Waveform_Editor
         int progressValue = 0;
         [ObservableProperty]
         int progressMax = 0;
+        #endregion
+
+        List<decimal>? PlotXData { get; set; } = null;
+        List<decimal>? PlotYData { get; set; } = null;
 
         //ConsoleControl.WPF.ConsoleControl consoleControl { get; set; }
         //string? outputFilePath = string.Empty;
@@ -264,9 +273,14 @@ namespace AFG_Waveform_Editor
         }
         async Task UpdateWaveformPlotAsync()
         {
-            (List<decimal>? X, List<decimal>? Y) = await ParseWaveformList(WaveformListDataCollection);
-            await PlotData(X, Y);
-            await SavWaveformListToAwgFormat(X, Y);
+            (PlotXData, PlotYData) = await ParseWaveformList(WaveformListDataCollection);
+            await PlotData(PlotXData, PlotYData);
+        }
+
+        [RelayCommand]
+        public async Task SaveAsAfg3xxxx(object? param)
+        {
+            await SavWaveformListToAwgFormat(PlotXData, PlotYData);
         }
 
         #region WaveformList
@@ -303,29 +317,32 @@ namespace AFG_Waveform_Editor
                 return;
             }
 
-            var waveforList = await ParseFileToWaveformList(InputFilePath);
+            WaveformListDataCollection = await ParseFileToWaveformList(InputFilePath);
 
-            if (waveforList == null)
+            if (WaveformListDataCollection == null)
             {
                 await WriteConsole("Parse File Error\n", Colors.Red);
                 return;
             }
 
-            WaveformListDataCollection = waveforList;
+            await UpdateWaveformPlotAsync();
 
-            (List<decimal>? X, List<decimal>? Y) = await ParseWaveformList(waveforList);
 
-            //(List<decimal>? dataX, List<decimal>? dataY) = await ParseFile(InputFilePath);
+            //WaveformListDataCollection = waveforList;
 
-            if ((X is null) || (Y is null))
-            {
-                await WriteConsole("Parse Data Error\n", Colors.Red);
-                return;
-            }
+            //(List<decimal>? X, List<decimal>? Y) = await ParseWaveformList(waveforList);
 
-            await PlotData(X, Y);
+            ////(List<decimal>? dataX, List<decimal>? dataY) = await ParseFile(InputFilePath);
 
-            await SavWaveformListToAwgFormat(X, Y);
+            //if ((X is null) || (Y is null))
+            //{
+            //    await WriteConsole("Parse Data Error\n", Colors.Red);
+            //    return;
+            //}
+
+            //await PlotData(X, Y);
+
+            ////await SavWaveformListToAwgFormat(X, Y);
         }
         [RelayCommand]
         public async Task SaveWaveformList(object? param)

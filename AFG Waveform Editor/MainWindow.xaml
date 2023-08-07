@@ -54,7 +54,7 @@
                 <Button Command="{Binding AddWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
                          ToolTip="Add to Last">Add</Button>
                 <Button Command="{Binding ClearWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
-                         ToolTip="Clear ALL Data">CLear</Button>
+                         ToolTip="Clear ALL Data">Clear</Button>
                 <Button Command="{Binding UpdateWaveformPlotCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
                          ToolTip="Update Plot">Update</Button>
                 <Button Command="{Binding LoadWaveformListCommand}" CommandParameter="{Binding ElementName=waveform_datagrid}" Margin="5,5,5,5"
@@ -75,6 +75,11 @@
                 </ce:ScrollingDataGrid.Columns>
             </ce:ScrollingDataGrid>
         </DockPanel>
-        <ScottPlot:WpfPlot x:Name="WpfPlot1" x:FieldModifier="public" DockPanel.Dock="Top"/>
+        <DockPanel DockPanel.Dock="Top">
+            <Button DockPanel.Dock="Bottom" Command="{Binding SaveAsAfg3xxxxCommand}" Width="200">Save as AFG31000 Format</Button>
+            <ScottPlot:WpfPlot x:Name="WpfPlot1" x:FieldModifier="public"/>
+        </DockPanel>
+
+
     </DockPanel>
 </Window>

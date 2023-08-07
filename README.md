@@ -4,6 +4,19 @@
 
 ![App](Assets/App.png)
 
+<!--TOC-->
+  - [Enviroment](#enviroment)
+  - [Input File format](#input-file-format)
+    - [Decimal](#decimal)
+    - [Scientific notation](#scientific-notation)
+  - [Output Format](#output-format)
+  - [Programming Note](#programming-note)
+    - [Embeded pdb file into dll/exe](#embeded-pdb-file-into-dllexe)
+    - [**Publish To Single FIle**](#publish-to-single-file)
+    - [References](#references)
+  - [History](#history)
+<!--/TOC-->
+
 ## Enviroment
 
 - Visual Studio 2022
@@ -79,7 +92,7 @@
 
 ## Programming Note
 
-## Embeded pdb file into dll/exe
+### Embeded pdb file into dll/exe
 
 **Set the debug symbols option as the following**
 
@@ -94,7 +107,7 @@
 ```
 ![Publish Option](Assets/publish_option.png)
 
-### References:
+### References
 
 - [Publish single executable not working for .NET 5 or .NET 6](https://community.esri.com/t5/net-maps-sdk-questions/publish-single-executable-not-working-for-net-5-or/td-p/1136336)
 - [Single-file deployment](https://learn.microsoft.com/en-us/dotnet/core/deploying/single-file/overview?tabs=cli#including-native-libraries)

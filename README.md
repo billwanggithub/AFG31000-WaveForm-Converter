@@ -79,10 +79,16 @@
 
 ## Programming Note
 
+## Embeded pdb file into dll/exe
+
+**Set the debug symbols option as the following**
+
+![Embeded Pdb File](Assets/embeded_pdb_file.png)
+
 ### **Publish To Single FIle**
 - Set Deploy mode to self-contained to avoid user installing .NET Desktop
 - Set Produce single file to combine all dll into single exe
-- Add The following line to FolderProfile.pubxml
+- Add The following line to FolderProfile.pubxml to include dll into single file
 ```xml
 	<IncludeAllContentForSelfExtract>True</IncludeAllContentForSelfExtract>
 ```

@@ -460,7 +460,7 @@ namespace AFG_Waveform_Editor
         [RelayCommand]
         public void GotoUserGuide(object? param)
         {
-            InternetHelper.OpenUrl(@"https://github.com/billwanggithub/AFG31000-WaveForm-Converter");
+            InternetHelper.OpenUrl(@"https://github.com/billwanggithub/AFG31000-WaveForm-Converter#readme");
         }
         [RelayCommand]
         public void GotoTektronic(object? param)
